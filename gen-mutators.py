@@ -3,7 +3,6 @@
 import pathlib
 import re
 from operators import (
-    REPLACE_OPERATORS, 
     REGEX_OPERATORS
 )
 from config import (
@@ -17,6 +16,15 @@ BASE_PATH = str(pathlib.Path().resolve())
 BASE_MUT = f'{BASE_PATH}/muts'
 REPLACEMENT_IN_REGEX = ["LESS", "RANDOM_INT", "GREATER"]
 
+
+def write_mutation(file_name, lines, i, line_mutated):
+    mutator_file = f'{BASE_MUT}/{file_name}.mutant.{i}.cpp'
+    with open(mutator_file, 'w', encoding="utf8") as file:
+        print(f"After: {line_mutated}")
+        file.writelines(lines)
+        return i + 1
+
+
 def mutate(file_to_mutate):
     input_file = f'{BITCOIN_CORE_PATH}/{file_to_mutate}'
 
@@ -27,7 +35,7 @@ def mutate(file_to_mutate):
         source_code = source_code.readlines()
         num_lines = len(source_code)
 
-    OPERATORS = REGEX_OPERATORS + REPLACE_OPERATORS
+    OPERATORS = REGEX_OPERATORS
     
     i = 0
     for operator in OPERATORS:
@@ -39,32 +47,20 @@ def mutate(file_to_mutate):
             if line_before_mutation.lstrip().startswith(("//", "*", "assert", "/*")):
                 continue
 
-            if operator in REGEX_OPERATORS:
-                if re.search(operator[0], line_before_mutation):
-                    #print(f"Before: {line_before_mutation}")
-                    operator_sub = operator[1]
+            if re.search(operator[0], line_before_mutation):
+                    print(f"Before: {line_before_mutation}")
+                    operators_sub = [operator[1]]
                     res = [op for op in REPLACEMENT_IN_REGEX if(op in operator[1])]
                     if bool(res):
-                        operator_sub = replace_value(res[0], operator[0], operator[1], line_before_mutation)
-                        if not operator_sub:
+                        operators_sub = replace_value(res[0], operator[0], operator[1], line_before_mutation)
+                        if not operators_sub:
                             continue
-                    line_mutated = re.sub(operator[0], operator_sub, line_before_mutation)
-                    lines[line_num] = f'{line_before_mutation[:-len(line_before_mutation.lstrip())]}{line_mutated}'
-                else:
-                    continue
-            elif operator in REPLACE_OPERATORS:
-                if operator[0] in line_before_mutation:
-                    #print(f"Before: {line_before_mutation}")
-                    line_mutated = line_before_mutation.replace(operator[0], operator[1])
-                    lines[line_num] = f'{line_before_mutation[:-len(line_before_mutation.lstrip())]}{line_mutated}'
-                else:
-                    continue
-
-            mutator_file = f'{BASE_MUT}/{file_name}.mutant.{i}.cpp'
-            with open(mutator_file, 'w', encoding="utf8") as file:
-                #print(f"After: {line_mutated}")
-                file.writelines(lines)
-                i = i + 1
+                    for op_sub in operators_sub:
+                        line_mutated = re.sub(operator[0], op_sub, line_before_mutation)
+                        lines[line_num] = f'{line_before_mutation[:-len(line_before_mutation.lstrip())]}{line_mutated}'
+                        i = write_mutation(file_name, lines, i, line_mutated)
+            else:
+                continue
 
 
 if __name__ == "__main__":

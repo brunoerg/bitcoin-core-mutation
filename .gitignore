@@ -1,2 +1,4 @@
 muts
 .txt
+__pycache__
+.vscode
