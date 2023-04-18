@@ -44,7 +44,7 @@ def mutate(file_to_mutate):
             lines = source_code.copy()
             line_before_mutation = lines[line_num]
 
-            if line_before_mutation.lstrip().startswith(("//", "*", "assert", "/*")):
+            if line_before_mutation.lstrip().startswith(("//", "*", "assert", "/*", "LogPrintf", "LogPrint")):
                 continue
 
             if re.search(operator[0], line_before_mutation):
