@@ -3,7 +3,8 @@
 import pathlib
 import re
 from operators import (
-    REGEX_OPERATORS
+    REGEX_OPERATORS,
+    SPECIFIC
 )
 from config import (
     FILES_TO_MUTATE,
@@ -36,6 +37,9 @@ def mutate(file_to_mutate):
         num_lines = len(source_code)
 
     OPERATORS = REGEX_OPERATORS
+    for key, value in SPECIFIC.items():
+        if file_to_mutate in key:
+            OPERATORS = OPERATORS + value
     
     i = 0
     for operator in OPERATORS:

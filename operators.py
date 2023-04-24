@@ -9,18 +9,23 @@ REGEX_OPERATORS = [["at(\(.*\))", r"at(0)"], ["CAmount\s+(\w+)\s*=\s*([0-9]+)", 
                    ["int32_t\s+(\w+)\s*=\s*([0-9]+)", r"int32_t \1 = RANDOM_INT"], ["const\s+size_t\s+(\w+)\s*=\s*([0-9]+)", r"const size_t \1 = LESS"],
                    [r"std::chrono::seconds (\w+){+(\w+)}", r"std::chrono::seconds \1{RANDOM_INT}"],
                    [r"std::chrono::seconds (\w+)\s*=\s*(.*)", r"std::chrono::seconds \1 = RANDOM_INT;"],
-                   [".n_new", ".n_tried"], [r"\w+\.GetNetwork\(\)", r"NET_INTERNAL"],
                    ["pindex->nHeight", r"RANDOM_INT"], ["pnode->GetId()", r"RANDOM_INT"],
                    [r"(\w+)\.ignore\((\d+)\)", r"\1.ignore(RANDOM_INT)"], [r"(\w+)\.ignore\((\d+)\)", r"\1.ignore(0)"],
-                   ["IsInboundConn", "IsFullOutboundConn"], [r"--(\b\w+\b)", r"++\1"], [r"(\b\w+\b)--", r"\1++"],
+                   [r"--(\b\w+\b)", r"++\1"], [r"(\b\w+\b)--", r"\1++"],
                    [" continue", " break"], ["std::all_of", "std::any_of"], ["std::any_of", "std::all_of"],
                    ["std::min", "std::max"], ["std::max", "std::min"], ["std::begin", "std::end"], ["std::end", "std::begin"],
                    ["true", "false"], ["false", "true"], [" > ", " < "], [" < ", " > "], [" >= ", " <= "],
                    [ " == ", " != "], [" != ", " == "], [" + ", " - "],  [r" - ", " + "],
                    [r".*\berase\(.+", r""], [r"^.*if\s*\(.*\)\s*continue;.*$", r""], 
                    [r"^.*if\s*\(.*\)\s*return;.*$", r""], [r"^.*if\s*\(.*\)\s*return.*;.*$", r""], [r"^(.*if\s*\(.*\)\s*\{.*)$", r"\1break;"], 
-                   [r"^(.*for\s*\(.*;.*;.*\)\s*\{.*)$", r"\1break;"], [r"^(.*while\s*\(.*\)\s*\{.*)$", r"\1break;"], ["return 0", "return 1"],
-                   [r"\bCheckAddrman\(\)", "1"], [r".n_new", ".n_tried"], [r".n_tried", ".n_new"], [r"\w+\.GetNetwork\(\)", r"NET_INTERNAL"], 
+                   [r"^(.*for\s*\(.*;.*;.*\)\s*\{.*)$", r"\1break;"], [r"^(.*while\s*\(.*\)\s*\{.*)$", r"\1break;"], ["return 0", "return 1"]]
+
+SPECIFIC = {
+    "src/addrman.cpp": [[r"\bCheckAddrman\(\)", "1"], [r".n_new", ".n_tried"], [r".n_tried", ".n_new"], [r"\w+\.GetNetwork\(\)", r"NET_INTERNAL"], 
                    [r"\bCheckAddrman\(\)", "0"], [r"GetTriedBucket", "GetNewBucket"], [r"pinfo->GetBucketPosition(nKey, true, nUBucket)", "RANDOM_INT"],
                    [r"ClearNew\(\s*(\w+)\s*,\s*(\w+)\s*\)", r"ClearNew(\2, \1)"], [r"^(.*ClearNew\(\s*\w+\s*,\s*\w+\s*\).*?)$", r"// \1"],
-                   [r"^(.*\b\w+\b\.IsTerrible\(\).*?)$", r"true"], [r"^(.*\b\w+\b\.IsTerrible\(\).*?)$", r"false"], [r"ADDRMAN_TRIED_BUCKET_COUNT", "RANDOM_INT"]]
+                   [r"^(.*\b\w+\b\.IsTerrible\(\).*?)$", r"true"], [r"^(.*\b\w+\b\.IsTerrible\(\).*?)$", r"false"], 
+                   [r"ADDRMAN_TRIED_BUCKET_COUNT", "RANDOM_INT"], [".n_new", ".n_tried"], [r"\w+\.GetNetwork\(\)", r"NET_INTERNAL"],
+                   ["IsInboundConn", "IsFullOutboundConn"]],
+    "src/wallet/coinselection.cpp": [[r"\w+\.GetSelectionAmount\(\)", r"RANDOM_INT"]]
+}
